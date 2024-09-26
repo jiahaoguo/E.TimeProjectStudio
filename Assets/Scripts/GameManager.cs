@@ -1,4 +1,16 @@
 using UnityEngine;
+using System.Collections;
+
+[System.Serializable]
+public class SaveData
+{
+    public int Gold;
+    public int Coffee;
+    public int TimerLevel;
+    public int UpgradeCostGold;
+
+    // You can easily add more variables here in the future
+}
 
 public class GameManager : MonoBehaviour
 {
@@ -6,9 +18,10 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private TimeManager timeManager;
     [SerializeField] private UpgradeData timerUpgradeData;
+    [SerializeField] private cloudSaveScript cloudSave; // Reference to your cloudSaveScript for saving data
 
     private int gold = 0;
-    private Animator animator; // Add Animator variable
+    private Animator animator;
 
     public int Gold
     {
@@ -48,11 +61,10 @@ public class GameManager : MonoBehaviour
 
     public int TimerNextLevel
     {
-        get { return timerLevel + 1; } // Always return timerLevel + 1
+        get { return timerLevel + 1; }
     }
 
-    private int upgradeCostGold = 1; // The initial cost for upgrading the timer
-    // Property for upgradeCostGold that triggers event
+    private int upgradeCostGold = 1;
     public int UpgradeCostGold
     {
         get { return upgradeCostGold; }
@@ -78,7 +90,6 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        // Get the Animator component from the current GameObject
         animator = GetComponent<Animator>();
 
         if (animator == null)
@@ -97,12 +108,32 @@ public class GameManager : MonoBehaviour
 
     public void BroadCastVariables()
     {
-        // Broadcast initial values for all variables
         GameEvents.OnVariableUpdated.Invoke("Gold", Gold);
         GameEvents.OnVariableUpdated.Invoke("Coffee", Coffee);
         GameEvents.OnVariableUpdated.Invoke("TimerLevel", TimerLevel);
         GameEvents.OnVariableUpdated.Invoke("TimerNextLevel", TimerNextLevel);
-        GameEvents.OnVariableUpdated.Invoke("UpgradeCostGold", UpgradeCostGold); // Broadcast the initial upgrade cost
+        GameEvents.OnVariableUpdated.Invoke("UpgradeCostGold", UpgradeCostGold);
+    }
+
+    public SaveData GetSaveData()
+    {
+        SaveData data = new SaveData
+        {
+            Gold = Gold,
+            Coffee = Coffee,
+            TimerLevel = TimerLevel,
+            UpgradeCostGold = UpgradeCostGold
+        };
+        return data;
+    }
+
+    public void LoadSaveData(SaveData data)
+    {
+        Gold = data.Gold;
+        Coffee = data.Coffee;
+        TimerLevel = data.TimerLevel;
+        UpgradeCostGold = data.UpgradeCostGold;
+        BroadCastVariables();
     }
 
     public void OpenFocusTimeScreen()
@@ -119,16 +150,20 @@ public class GameManager : MonoBehaviour
     {
         if (gold >= upgradeCostGold)
         {
-            gold -= upgradeCostGold; // Deduct the gold cost
-            
-           
+            gold -= upgradeCostGold;
             animator.SetTrigger("UpgradeTimer");
         }
     }
 
     public void UpgradeTimer()
     {
-        TimerLevel += 1; // Increase the timer level
-        UpgradeCostGold = timerUpgradeData.requiredGold[TimerLevel];// Example increment to make the upgrade cost higher for the next upgrade
+        TimerLevel += 1;
+        UpgradeCostGold = timerUpgradeData.requiredGold[TimerLevel];
+    }
+
+    // Called when the application is about to quit
+    private void OnApplicationQuit()
+    {
+        cloudSave.SaveData(); // Auto-save before the game closes
     }
 }
