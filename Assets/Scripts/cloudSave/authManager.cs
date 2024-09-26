@@ -10,6 +10,7 @@ public class authManager : MonoBehaviour
 {
     [HideInInspector] public Text logTxt;
     [HideInInspector] public string facebookToken = "....";
+    public Text playerid;
 
     async void Start()
     {
@@ -33,6 +34,7 @@ public class authManager : MonoBehaviour
 
             Debug.Log("Sign in Success");
             Debug.Log("Player Id:" + AuthenticationService.Instance.PlayerId);
+            playerid.text = AuthenticationService.Instance.PlayerId;
             // You can update UI elements here to show successful sign-in
         }
         catch (AuthenticationException ex)
@@ -48,42 +50,42 @@ public class authManager : MonoBehaviour
     }
 
     // Facebook sign-in method (you may not need this, but it's here for reference)
-    async Task signInWithFacebook(string token)
-    {
-        try
-        {
-            await AuthenticationService.Instance.SignInWithFacebookAsync(token);
-            Debug.Log("Sign in with Facebook success");
-        }
-        catch (AuthenticationException ex)
-        {
-            Debug.LogError("Sign in with Facebook failed!!");
-            Debug.LogException(ex);
-        }
-        catch (RequestFailedException ex)
-        {
-            Debug.LogError("Request failed!!");
-            Debug.LogException(ex);
-        }
-    }
+    //async Task signInWithFacebook(string token)
+    //{
+    //    try
+    //    {
+    //        await AuthenticationService.Instance.SignInWithFacebookAsync(token);
+    //        Debug.Log("Sign in with Facebook success");
+    //    }
+    //    catch (AuthenticationException ex)
+    //    {
+    //        Debug.LogError("Sign in with Facebook failed!!");
+    //        Debug.LogException(ex);
+    //    }
+    //    catch (RequestFailedException ex)
+    //    {
+    //        Debug.LogError("Request failed!!");
+    //        Debug.LogException(ex);
+    //    }
+    //}
 
     // Steam sign-in method (you may not need this, but it's here for reference)
-    async Task signInWithSteam(string token)
-    {
-        try
-        {
-            await AuthenticationService.Instance.SignInWithSteamAsync(token);
-            Debug.Log("Sign in with Steam success");
-        }
-        catch (AuthenticationException ex)
-        {
-            Debug.LogError("Sign in with Steam failed!!");
-            Debug.LogException(ex);
-        }
-        catch (RequestFailedException ex)
-        {
-            Debug.LogError("Request failed!!");
-            Debug.LogException(ex);
-        }
-    }
+    //async Task signInWithSteam(string token)
+    //{
+    //    try
+    //    {
+    //        await AuthenticationService.Instance.SignInWithSteamAsync(token);
+    //        Debug.Log("Sign in with Steam success");
+    //    }
+    //    catch (AuthenticationException ex)
+    //    {
+    //        Debug.LogError("Sign in with Steam failed!!");
+    //        Debug.LogException(ex);
+    //    }
+    //    catch (RequestFailedException ex)
+    //    {
+    //        Debug.LogError("Request failed!!");
+    //        Debug.LogException(ex);
+    //    }
+    //}
 }

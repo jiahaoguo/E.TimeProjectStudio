@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
         get { return timerLevel + 1; }
     }
 
-    private int upgradeCostGold = 1;
+    private int upgradeCostGold;
     public int UpgradeCostGold
     {
         get { return upgradeCostGold; }
@@ -159,6 +159,7 @@ public class GameManager : MonoBehaviour
     {
         TimerLevel += 1;
         UpgradeCostGold = timerUpgradeData.requiredGold[TimerLevel];
+        BroadCastVariables() ;
     }
 
     // Called when the application is about to quit

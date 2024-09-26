@@ -10,22 +10,34 @@ public class cloudSaveScript : MonoBehaviour
 {
     public Text status;
 
-    // Start method to initialize Unity services and ensure authentication is complete
     public async void Start()
     {
+        // Initialize Unity services and wait for authentication
         await UnityServices.InitializeAsync();
 
         // Ensure that Cloud Save operations only happen after successful authentication
         if (AuthenticationService.Instance.IsSignedIn)
         {
             LoadData(); // Automatically load data after successful sign-in
+            StartCoroutine(AutoSave()); // Start the auto-save coroutine
         }
         else
         {
             AuthenticationService.Instance.SignedIn += () =>
             {
                 LoadData(); // Load data once authentication is complete
+                StartCoroutine(AutoSave()); // Start the auto-save coroutine
             };
+        }
+    }
+
+    // Coroutine to automatically save data every 3 seconds
+    private IEnumerator AutoSave()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(3); // Wait for 3 seconds
+            SaveData(); // Save data to the cloud
         }
     }
 
@@ -43,8 +55,16 @@ public class cloudSaveScript : MonoBehaviour
                 { "GameManagerSave", jsonData }
             };
 
-            await CloudSaveService.Instance.Data.ForceSaveAsync(data);
-            //status.text = "Data saved!";
+            try
+            {
+                await CloudSaveService.Instance.Data.ForceSaveAsync(data);
+                status.text = "Data saved!";
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError("Error saving data: " + ex.Message);
+                status.text = "Save failed: " + ex.Message;
+            }
         }
         else
         {
@@ -57,58 +77,34 @@ public class cloudSaveScript : MonoBehaviour
     {
         if (AuthenticationService.Instance.IsSignedIn)
         {
-            Dictionary<string, string> serverData = await CloudSaveService.Instance.Data.LoadAsync(new HashSet<string> { "GameManagerSave" });
-
-            if (serverData.ContainsKey("GameManagerSave"))
+            try
             {
-                string jsonData = serverData["GameManagerSave"];
-                SaveData saveData = JsonUtility.FromJson<SaveData>(jsonData);
+                Dictionary<string, string> serverData = await CloudSaveService.Instance.Data.LoadAsync(new HashSet<string> { "GameManagerSave" });
 
-                GameManager gameManager = GameManager.Instance;
-                gameManager.LoadSaveData(saveData);
+                if (serverData.ContainsKey("GameManagerSave"))
+                {
+                    string jsonData = serverData["GameManagerSave"];
+                    SaveData saveData = JsonUtility.FromJson<SaveData>(jsonData);
 
-                status.text = "Data loaded!";
+                    GameManager gameManager = GameManager.Instance;
+                    gameManager.LoadSaveData(saveData);
+
+                    status.text = "Data loaded!";
+                }
+                else
+                {
+                    status.text = "No data found!";
+                }
             }
-            else
+            catch (System.Exception ex)
             {
-                status.text = "No data found!";
+                Debug.LogError("Error loading data: " + ex.Message);
+                status.text = "Load failed: " + ex.Message;
             }
         }
         else
         {
             status.text = "Load failed. User is not authenticated.";
-        }
-    }
-
-    // Delete saved keys from the cloud
-    public async void DeleteKey()
-    {
-        if (AuthenticationService.Instance.IsSignedIn)
-        {
-            await CloudSaveService.Instance.Data.ForceDeleteAsync("GameManagerSave");
-            status.text = "Data deleted!";
-        }
-        else
-        {
-            status.text = "Delete failed. User is not authenticated.";
-        }
-    }
-
-    // Retrieve all keys from the cloud and print them to the console
-    public async void RetrieveAllKeys()
-    {
-        if (AuthenticationService.Instance.IsSignedIn)
-        {
-            List<string> allKeys = await CloudSaveService.Instance.Data.RetrieveAllKeysAsync();
-
-            for (int i = 0; i < allKeys.Count; i++)
-            {
-                Debug.Log(allKeys[i]);
-            }
-        }
-        else
-        {
-            status.text = "Retrieve failed. User is not authenticated.";
         }
     }
 }
