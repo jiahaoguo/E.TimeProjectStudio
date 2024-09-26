@@ -5,6 +5,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     [SerializeField] private TimeManager timeManager;
+    [SerializeField] private UpgradeData timerUpgradeData;
 
     private int gold = 0;
     private Animator animator; // Add Animator variable
@@ -86,6 +87,12 @@ public class GameManager : MonoBehaviour
         }
 
         BroadCastVariables();
+        InitiateUpgradeData();
+    }
+
+    void InitiateUpgradeData()
+    {
+        UpgradeCostGold = timerUpgradeData.requiredGold[TimerLevel];
     }
 
     public void BroadCastVariables()
@@ -108,7 +115,7 @@ public class GameManager : MonoBehaviour
         timeManager.ResetTimer();
     }
 
-    public void tryUpgradeTimer()
+    public void tryUpgradeTimer(int i)
     {
         if (gold >= upgradeCostGold)
         {
@@ -122,6 +129,6 @@ public class GameManager : MonoBehaviour
     public void UpgradeTimer()
     {
         TimerLevel += 1; // Increase the timer level
-        UpgradeCostGold += 5; // Example increment to make the upgrade cost higher for the next upgrade
+        UpgradeCostGold = timerUpgradeData.requiredGold[TimerLevel];// Example increment to make the upgrade cost higher for the next upgrade
     }
 }
