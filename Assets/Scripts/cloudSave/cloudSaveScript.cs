@@ -63,7 +63,10 @@ public class cloudSaveScript : MonoBehaviour
             catch (System.Exception ex)
             {
                 Debug.LogError("Error saving data: " + ex.Message);
-                status.text = "Save failed: " + ex.Message;
+                if (status.text != null)
+                {
+                    status.text = "Save failed: " + ex.Message;
+                }
             }
         }
         else
@@ -99,7 +102,10 @@ public class cloudSaveScript : MonoBehaviour
             catch (System.Exception ex)
             {
                 Debug.LogError("Error loading data: " + ex.Message);
-                status.text = "Load failed: " + ex.Message;
+                if (status.text != null)
+                {
+                    status.text = "Load failed: " + ex.Message;
+                }
             }
         }
         else

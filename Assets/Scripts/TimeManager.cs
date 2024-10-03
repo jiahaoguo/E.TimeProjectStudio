@@ -61,9 +61,11 @@ public class TimeManager : MonoBehaviour
                 rewardTimer = 0f;
                 if (Random.Range(0f, 1f) <= GameManager.Instance.goldRewardChance)
                 {
-                    GameManager.Instance.Gold += GameManager.Instance.goldRewardNum;
+                    GameManager.Instance.Gold += GameManager.Instance.goldRewardNum * (GameManager.Instance.TimerLevel/10+1);
+                    int damage = Random.Range(3, 8) * (GameManager.Instance.TimerLevel+1);
+                    LevelManager.Instance.DamageEnemy(damage);
                     Debug.Log("Gold Added! Total Gold: " + GameManager.Instance.Gold);
-                    AnnouncementManager.Instance.ShowAnnouncement(GameManager.Instance.goldRewardNum + " Gold Added");
+                    AnnouncementManager.Instance.ShowAnnouncement(GameManager.Instance.goldRewardNum + " Gold Added \n " + damage + "damage applied");
                 }
                 else
                 {
@@ -78,7 +80,7 @@ public class TimeManager : MonoBehaviour
 
         currentTime = 0;
         isCountingDown = false;
-        timerText.text = "00:00:00"; // Display when time is up
+        timerText.text = "00:00"; // Display when time is up
         Debug.Log("Countdown Complete!");
     }
 
@@ -105,7 +107,9 @@ public class TimeManager : MonoBehaviour
         int minutes = Mathf.FloorToInt((currentTime % 3600) / 60);
         int seconds = Mathf.FloorToInt(currentTime % 60);
 
-        string timeString = string.Format("{0:D2}:{1:D2}:{2:D2}", hours, minutes, seconds);
+        string timeString = string.Format("{1:D2}:{2:D2}", hours, minutes, seconds);
         timerText.text = timeString;
     }
+
+
 }

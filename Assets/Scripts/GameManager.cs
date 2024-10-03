@@ -167,4 +167,11 @@ public class GameManager : MonoBehaviour
     {
         cloudSave.SaveData(); // Auto-save before the game closes
     }
+
+    //Debug 
+    public void SetTimerLevelToZero()
+    {
+        TimerLevel = 0;
+        BroadCastVariables();
+    }
 }

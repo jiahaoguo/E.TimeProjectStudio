@@ -1,15 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI; // Add for UI components
 using TMPro;
+using UnityEngine.Tilemaps; // Add for Tilemaps
 using System.Collections;
 using System.Collections.Generic;
 
 public class AlphaController : MonoBehaviour
 {
-    private List<SpriteRenderer> spriteRenderers = new List<SpriteRenderer>();
-    private List<TextMeshProUGUI> textMeshes = new List<TextMeshProUGUI>();
-    private List<Image> uiImages = new List<Image>(); // Add for UI Image components
-
     // Example input format: "TargetName,startAlpha,endAlpha,duration"
     // Public method to start scanning and tweening using a string input
     public void StartAlphaTweenWithString(string input)
@@ -39,16 +36,8 @@ public class AlphaController : MonoBehaviour
             float.TryParse(parameters[2], out float endAlpha) &&
             float.TryParse(parameters[3], out float duration))
         {
-            // Clear previous references
-            spriteRenderers.Clear();
-            textMeshes.Clear();
-            uiImages.Clear(); // Clear UI Images
-
-            // Scan for all children containing SpriteRenderer, TextMeshProUGUI, or UI Image components
-            ScanAllChildren(target);
-
-            // Start the tweening coroutine
-            StartCoroutine(TweenAlpha(startAlpha, endAlpha, duration));
+            // Start the tweening coroutine for the target object
+            StartCoroutine(TweenAlpha(target, startAlpha, endAlpha, duration));
         }
         else
         {
@@ -56,29 +45,19 @@ public class AlphaController : MonoBehaviour
         }
     }
 
-    // Scans all children recursively for SpriteRenderer, TextMeshProUGUI, and UI Image components
-    void ScanAllChildren(Transform parent)
-    {
-        foreach (SpriteRenderer sr in parent.GetComponentsInChildren<SpriteRenderer>())
-        {
-            spriteRenderers.Add(sr);
-        }
-
-        foreach (TextMeshProUGUI tmp in parent.GetComponentsInChildren<TextMeshProUGUI>())
-        {
-            textMeshes.Add(tmp);
-        }
-
-        foreach (Image img in parent.GetComponentsInChildren<Image>()) // Add Image components
-        {
-            uiImages.Add(img);
-        }
-    }
-
-    // Coroutine for tweening alpha values
-    IEnumerator TweenAlpha(float startAlpha, float endAlpha, float duration)
+    // Coroutine for tweening alpha values on a specific target
+    IEnumerator TweenAlpha(Transform target, float startAlpha, float endAlpha, float duration)
     {
         float elapsedTime = 0f;
+
+        // Gather SpriteRenderers, TextMeshes, UI Images, and Tilemaps for this specific target
+        List<SpriteRenderer> spriteRenderers = new List<SpriteRenderer>();
+        List<TextMeshProUGUI> textMeshes = new List<TextMeshProUGUI>();
+        List<Image> uiImages = new List<Image>();
+        List<Tilemap> tilemaps = new List<Tilemap>(); // Add Tilemap list
+
+        // Scan for all children containing SpriteRenderer, TextMeshProUGUI, UI Image, or Tilemap components
+        ScanAllChildren(target, spriteRenderers, textMeshes, uiImages, tilemaps);
 
         // Loop over the tween duration
         while (elapsedTime < duration)
@@ -110,16 +89,48 @@ public class AlphaController : MonoBehaviour
                 img.color = color;
             }
 
+            // Update alpha for all Tilemaps
+            foreach (var tm in tilemaps)
+            {
+                Color color = tm.color;
+                color.a = alpha;
+                tm.color = color;
+            }
+
             elapsedTime += Time.deltaTime;
             yield return null; // Wait for the next frame
         }
 
         // Ensure final alpha value is set
-        SetFinalAlpha(endAlpha);
+        SetFinalAlpha(spriteRenderers, textMeshes, uiImages, tilemaps, endAlpha);
+    }
+
+    // Scans all children recursively for SpriteRenderer, TextMeshProUGUI, UI Image, and Tilemap components
+    void ScanAllChildren(Transform parent, List<SpriteRenderer> spriteRenderers, List<TextMeshProUGUI> textMeshes, List<Image> uiImages, List<Tilemap> tilemaps)
+    {
+        foreach (SpriteRenderer sr in parent.GetComponentsInChildren<SpriteRenderer>())
+        {
+            spriteRenderers.Add(sr);
+        }
+
+        foreach (TextMeshProUGUI tmp in parent.GetComponentsInChildren<TextMeshProUGUI>())
+        {
+            textMeshes.Add(tmp);
+        }
+
+        foreach (Image img in parent.GetComponentsInChildren<Image>())
+        {
+            uiImages.Add(img);
+        }
+
+        foreach (Tilemap tm in parent.GetComponentsInChildren<Tilemap>())
+        {
+            tilemaps.Add(tm);
+        }
     }
 
     // Sets the final alpha value after the tween ends
-    void SetFinalAlpha(float alpha)
+    void SetFinalAlpha(List<SpriteRenderer> spriteRenderers, List<TextMeshProUGUI> textMeshes, List<Image> uiImages, List<Tilemap> tilemaps, float alpha)
     {
         // Set final alpha for SpriteRenderers
         foreach (var sr in spriteRenderers)
@@ -143,6 +154,14 @@ public class AlphaController : MonoBehaviour
             Color color = img.color;
             color.a = alpha;
             img.color = color;
+        }
+
+        // Set final alpha for Tilemaps
+        foreach (var tm in tilemaps)
+        {
+            Color color = tm.color;
+            color.a = alpha;
+            tm.color = color;
         }
     }
 }
