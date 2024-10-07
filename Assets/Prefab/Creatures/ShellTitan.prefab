@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 4388306697108466389}
   - component: {fileID: 7299314865607571188}
   - component: {fileID: 5442506956409376303}
-  - component: {fileID: 880453099014799580}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -98,20 +97,6 @@ SortingGroup:
   m_SortingLayer: 2
   m_SortingOrder: 0
   m_SortAtRoot: 1
---- !u!114 &880453099014799580
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2294855238816447369}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f4f488e3bb39a49b957314907cc54c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MaxHealth: 0
-  healthSlider: {fileID: 0}
 --- !u!1 &3035397334668080700
 GameObject:
   m_ObjectHideFlags: 0

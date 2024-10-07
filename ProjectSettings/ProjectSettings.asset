@@ -44,7 +44,7 @@ PlayerSettings:
   m_HolographicTrackingLossScreen: {fileID: 0}
   defaultScreenWidth: 1920
   defaultScreenHeight: 1080
-  defaultScreenWidthWeb: 1080
+  defaultScreenWidthWeb: 1280
   defaultScreenHeightWeb: 720
   m_StereoRenderingPath: 0
   m_ActiveColorSpace: 1
@@ -710,11 +710,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: dd91a0f4-41cd-42b5-ad15-969115c59afb
+  cloudProjectId: def72203-b99d-41b2-9ac5-d2bbcb4f86d0
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
   projectName: ETime
-  organizationId: robinbschool
+  organizationId: jg6046
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
